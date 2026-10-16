@@ -1,0 +1,38 @@
+/*
+ * rkoomera — global styles for the Webflow site.
+ * Loaded via jsDelivr in Site settings > Custom code > Head.
+ * Keep layout and styling in Webflow; use this file for things Webflow can't do well.
+ */
+
+:root {
+  --rk-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --rk-duration: 0.8s;
+}
+
+/* Reveal module: hidden only when JS is running, so content never gets stuck invisible. */
+.rk-js .rk-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--rk-duration) var(--rk-ease-out),
+    transform var(--rk-duration) var(--rk-ease-out);
+}
+
+.rk-js .rk-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Respect users who turn off motion. */
+@media (prefers-reduced-motion: reduce) {
+  .rk-js .rk-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Hide elements in the live site but keep them in the Designer: add class rk-hide-live. */
+html:not(.wf-design-mode) .rk-hide-live {
+  display: none !important;
+}
