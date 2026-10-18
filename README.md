@@ -68,22 +68,26 @@ npm run dev        # rebuilds dist/main.js on every save while you work
 npm run build      # minified build before committing
 ```
 
-Commit `src/` and `dist/` together, push, then point Webflow at the new commit:
+Commit `src/` and `dist/` together, push, then update the hash in Site settings → Custom code → Footer:
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/pinaka-design/rkoomera@<commit-hash>/dist/main.js"></script>
 ```
 
-## Webflow setup (Home, before `</body>`)
+## Webflow setup
 
-Libraries load first, then the bundle:
+| Where | What |
+|---|---|
+| Site settings → GSAP integration | GSAP on, ScrollTrigger ticked (add other plugins here when needed) |
+| Site settings → Custom code → Footer | the two scripts below |
+| Page settings → Custom code | leave empty, so nothing loads twice |
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@rive-app/canvas@2.45.0"></script>
 <script src="https://cdn.jsdelivr.net/gh/pinaka-design/rkoomera@<commit-hash>/dist/main.js"></script>
 ```
+
+The Rive runtime must come before `main.js`. GSAP comes from Webflow, and `main.js` waits for the page to finish loading before it starts.
 
 ## Components
 
