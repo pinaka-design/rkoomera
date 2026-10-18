@@ -83,6 +83,7 @@ function initRiveSetup() {
         stateMachine: stateMachineName,
         autoplay: !reduceMotion,
         isTouchScrollEnabled: true,
+        autoBind: true,
         layout: new rive.Layout({ fit: fit }),
         onLoad: handleLoad,
         onLoadError: handleError,
