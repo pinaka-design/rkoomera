@@ -1,22 +1,22 @@
-// Logo Card Testimonials (based on Osmo's Logo Card Testimonials).
-// Testimonials stack on top of each other; the logo rolls and the text fades in
-// line by line. Dots show progress and jump to a testimonial on click.
+// Project slider (based on Osmo's Logo Card Testimonials).
+// Projects stack on top of each other; the logo rolls and the text fades in
+// line by line. Dots show progress and jump to a project on click.
 //
 // Webflow attributes:
-//   data-module="logo-testimonials"          on the wrapper, required
-//   data-logo-testimonials-autoplay="6"      seconds per slide, 0 or missing = click only
-//   data-logo-testimonials-item              each testimonial (works on a CMS Collection Item)
-//   data-logo-testimonials-logo              the logo inside .logo-testimonials__logo-slot
-//   data-logo-testimonials-split             text that fades in line by line
-//   data-logo-testimonials-dots              dots wrapper, holding one dot as the blueprint
-//   data-logo-testimonials-dot               the dot blueprint (cloned per testimonial)
-//   data-logo-testimonials-dot-fill          progress fill inside the dot
+//   data-module="project-slider"          on the wrapper, required
+//   data-project-slider-autoplay="6"      seconds per project, 0 or missing = click only
+//   data-project-slider-item              each project (works on a CMS Collection Item)
+//   data-project-slider-logo              the logo, inside a slot with overflow hidden
+//   data-project-slider-split             text that fades in line by line
+//   data-project-slider-dots              dots wrapper, holding one dot as the blueprint
+//   data-project-slider-dot               the dot blueprint (cloned per project)
+//   data-project-slider-dot-fill          progress fill inside the dot
 //
-// Sets data-logo-testimonials-status="active" | "leaving" | "inactive" on items and dots.
+// Sets data-project-slider-status="active" | "leaving" | "inactive" on items and dots.
 // Needs SplitText enabled in Site settings → GSAP integration.
 import { onDestroy, onView } from "../lib/modules.js";
 
-export default function logoTestimonials(root) {
+export default function projectSlider(root) {
   if (typeof SplitText === "undefined") {
     console.error(
       "[rkoomera] SplitText is missing. Tick it in Site settings → GSAP integration."
@@ -24,31 +24,29 @@ export default function logoTestimonials(root) {
     return;
   }
 
-  const items = Array.from(
-    root.querySelectorAll("[data-logo-testimonials-item]")
-  );
+  const items = Array.from(root.querySelectorAll("[data-project-slider-item]"));
   if (!items.length) return;
 
-  const dotsWrap = root.querySelector("[data-logo-testimonials-dots]");
-  const dotTemplate = dotsWrap.querySelector("[data-logo-testimonials-dot]");
+  const dotsWrap = root.querySelector("[data-project-slider-dots]");
+  const dotTemplate = dotsWrap.querySelector("[data-project-slider-dot]");
   const autoplaySeconds =
-    parseFloat(root.getAttribute("data-logo-testimonials-autoplay")) || 0;
+    parseFloat(root.getAttribute("data-project-slider-autoplay")) || 0;
 
   dotTemplate.remove();
 
   const slides = items.map((item, index) => {
     const dot = dotTemplate.cloneNode(true);
-    dot.setAttribute("aria-label", `Show testimonial ${index + 1}`);
+    dot.setAttribute("aria-label", `Show project ${index + 1}`);
     dot.addEventListener("click", () => goTo(index));
     dotsWrap.appendChild(dot);
 
     return {
       item,
       dot,
-      fill: dot.querySelector("[data-logo-testimonials-dot-fill]"),
-      logo: item.querySelector("[data-logo-testimonials-logo]"),
+      fill: dot.querySelector("[data-project-slider-dot-fill]"),
+      logo: item.querySelector("[data-project-slider-logo]"),
       splits: Array.from(
-        item.querySelectorAll("[data-logo-testimonials-split]")
+        item.querySelectorAll("[data-project-slider-split]")
       ).map((element) =>
         SplitText.create(element, {
           type: "lines",
@@ -70,10 +68,10 @@ export default function logoTestimonials(root) {
 
   function setStatus(slide, status) {
     const isActive = status === "active";
-    slide.item.setAttribute("data-logo-testimonials-status", status);
+    slide.item.setAttribute("data-project-slider-status", status);
     slide.item.setAttribute("aria-hidden", String(!isActive));
     slide.dot.setAttribute(
-      "data-logo-testimonials-status",
+      "data-project-slider-status",
       isActive ? "active" : "inactive"
     );
     slide.dot.setAttribute("aria-current", String(isActive));

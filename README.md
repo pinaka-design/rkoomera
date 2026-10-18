@@ -103,20 +103,20 @@ The Rive runtime must come before `main.js`. GSAP comes from Webflow, and `main.
 
 Status is written to `data-rive-status`: `loading`, `loaded` or `error`.
 
-### logo-testimonials
+### project-slider
 
-Stacked testimonials with a rolling logo, line-by-line text and progress dots. Works with a CMS Collection List.
+Stacked project slides with a rolling logo, line-by-line text and progress dots (based on Osmo's Logo Card Testimonials). Works with a CMS Collection List.
 Needs **SplitText** ticked in Site settings → GSAP integration.
 
 | Attribute | Where | Notes |
 |---|---|---|
-| `data-module="logo-testimonials"` | wrapper | required |
-| `data-logo-testimonials-autoplay="6"` | wrapper | seconds per testimonial, `0` or missing = click only |
-| `data-logo-testimonials-item` | each testimonial (Collection Item) | |
-| `data-logo-testimonials-logo` | logo inside `.logo-testimonials__logo-slot` | rolls up/down on change |
-| `data-logo-testimonials-split` | quote, name, role | fades in line by line |
-| `data-logo-testimonials-dots` | dots wrapper | holds one dot as the blueprint |
-| `data-logo-testimonials-dot` | the blueprint dot | cloned per testimonial |
-| `data-logo-testimonials-dot-fill` | inside the dot | autoplay progress |
+| `data-module="project-slider"` | wrapper | required |
+| `data-project-slider-autoplay="6"` | wrapper | seconds per project, `0` or missing = click only |
+| `data-project-slider-item` | each project (Collection Item) | |
+| `data-project-slider-logo` | logo inside the logo slot | rolls up/down on change |
+| `data-project-slider-split` | text (title, description...) | fades in line by line |
+| `data-project-slider-dots` | dots wrapper | holds one dot as the blueprint |
+| `data-project-slider-dot` | the blueprint dot | cloned per project |
+| `data-project-slider-dot-fill` | inside the dot | autoplay progress |
 
-Status is written to `data-logo-testimonials-status` (`active`, `leaving`, `inactive`) on items and dots. The CSS that hides inactive items and widens the active dot lives in Site settings → Custom code → Head.
+Status is written to `data-project-slider-status` (`active`, `leaving`, `inactive`) on items and dots. The CSS that hides inactive items and widens the active dot lives in Site settings → Custom code → Head.
