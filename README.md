@@ -105,8 +105,7 @@ Status is written to `data-rive-status`: `loading`, `loaded` or `error`.
 
 ### project-slider
 
-Stacked project slides with a rolling logo, line-by-line text and progress dots (based on Osmo's Logo Card Testimonials). Works with a CMS Collection List.
-Needs **SplitText** ticked in Site settings → GSAP integration.
+Stacked project slides with a rolling logo, fading text and progress dots (based on Osmo's Logo Card Testimonials). Works with a CMS Collection List.
 
 | Attribute | Where | Notes |
 |---|---|---|
@@ -114,7 +113,7 @@ Needs **SplitText** ticked in Site settings → GSAP integration.
 | `data-project-slider-autoplay="6"` | wrapper | seconds per project, `0` or missing = click only |
 | `data-project-slider-item` | each project (Collection Item) | |
 | `data-project-slider-logo` | logo inside the logo slot | rolls up/down on change |
-| `data-project-slider-split` | text (title, description...) | fades in line by line |
+| `data-project-slider-text` | text (title, description...) | fades in, one element after another |
 | `data-project-slider-dots` | dots wrapper | holds one dot as the blueprint |
 | `data-project-slider-dot` | the blueprint dot | cloned per project |
 | `data-project-slider-dot-fill` | inside the dot | autoplay progress |

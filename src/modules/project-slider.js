@@ -1,29 +1,21 @@
 // Project slider (based on Osmo's Logo Card Testimonials).
 // Projects stack on top of each other; the logo rolls and the text fades in
-// line by line. Dots show progress and jump to a project on click.
+// element by element. Dots show progress and jump to a project on click.
 //
 // Webflow attributes:
 //   data-module="project-slider"          on the wrapper, required
 //   data-project-slider-autoplay="6"      seconds per project, 0 or missing = click only
 //   data-project-slider-item              each project (works on a CMS Collection Item)
 //   data-project-slider-logo              the logo, inside a slot with overflow hidden
-//   data-project-slider-split             text that fades in line by line
+//   data-project-slider-text              text that fades in, one element after another
 //   data-project-slider-dots              dots wrapper, holding one dot as the blueprint
 //   data-project-slider-dot               the dot blueprint (cloned per project)
 //   data-project-slider-dot-fill          progress fill inside the dot
 //
 // Sets data-project-slider-status="active" | "leaving" | "inactive" on items and dots.
-// Needs SplitText enabled in Site settings → GSAP integration.
 import { onDestroy, onView } from "../lib/modules.js";
 
 export default function projectSlider(root) {
-  if (typeof SplitText === "undefined") {
-    console.error(
-      "[rkoomera] SplitText is missing. Tick it in Site settings → GSAP integration."
-    );
-    return;
-  }
-
   const items = Array.from(root.querySelectorAll("[data-project-slider-item]"));
   if (!items.length) return;
 
@@ -45,17 +37,7 @@ export default function projectSlider(root) {
       dot,
       fill: dot.querySelector("[data-project-slider-dot-fill]"),
       logo: item.querySelector("[data-project-slider-logo]"),
-      splits: Array.from(
-        item.querySelectorAll("[data-project-slider-split]")
-      ).map((element) =>
-        SplitText.create(element, {
-          type: "lines",
-          autoSplit: true,
-        })
-      ),
-      getLines() {
-        return this.splits.flatMap((split) => split.lines);
-      },
+      texts: Array.from(item.querySelectorAll("[data-project-slider-text]")),
     };
   });
 
@@ -123,8 +105,8 @@ export default function projectSlider(root) {
 
     const outgoing = slides[activeIndex];
     const incoming = slides[nextIndex];
-    const outgoingLines = outgoing.getLines();
-    const incomingLines = incoming.getLines();
+    const outgoingTexts = outgoing.texts;
+    const incomingTexts = incoming.texts;
 
     setStatus(outgoing, "leaving");
     setStatus(incoming, "active");
@@ -136,8 +118,8 @@ export default function projectSlider(root) {
         setStatus(outgoing, "inactive");
         gsap.set(
           [
-            ...outgoingLines,
-            ...incomingLines,
+            ...outgoingTexts,
+            ...incomingTexts,
             outgoing.logo,
             incoming.logo,
             outgoing.item,
@@ -179,7 +161,7 @@ export default function projectSlider(root) {
 
     transition
       .to(
-        outgoingLines,
+        outgoingTexts,
         {
           opacity: 0,
           duration: 0.4,
@@ -191,14 +173,14 @@ export default function projectSlider(root) {
         0
       )
       .fromTo(
-        incomingLines,
+        incomingTexts,
         {
           opacity: 0,
-          yPercent: 40,
+          y: "0.75em",
         },
         {
           opacity: 1,
-          yPercent: 0,
+          y: 0,
           duration: 0.8,
           ease: "power3.out",
           stagger: {
@@ -274,7 +256,6 @@ export default function projectSlider(root) {
     timer?.kill();
     transition?.kill();
     mm.revert();
-    slides.forEach((slide) => slide.splits.forEach((split) => split.revert()));
     root.removeEventListener("pointerenter", onHold);
     root.removeEventListener("pointerleave", onRelease);
     root.removeEventListener("focusin", onHold);
