@@ -7,7 +7,9 @@
 // Components live in /modules, scroll/motion effects in /animations.
 // Both are registered the same way.
 import rive from "./rive.js";
+import logoTestimonials from "./logo-testimonials.js";
 
 export const registry = {
   rive,
+  "logo-testimonials": logoTestimonials,
 };

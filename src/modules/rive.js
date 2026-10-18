@@ -84,7 +84,7 @@ export default function riveModule(el) {
       riveFile,
       canvas,
       artboard: artboardName,
-      stateMachines: stateMachineName,
+      stateMachine: stateMachineName,
       autoplay: !reduced,
       autoBind: true, // needed for files that use data binding / view models
       isTouchScrollEnabled: true,

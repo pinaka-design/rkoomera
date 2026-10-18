@@ -102,3 +102,21 @@ The Rive runtime must come before `main.js`. GSAP comes from Webflow, and `main.
 | `data-rive-fit` | no | `contain` (default), `cover`, `fill`... |
 
 Status is written to `data-rive-status`: `loading`, `loaded` or `error`.
+
+### logo-testimonials
+
+Stacked testimonials with a rolling logo, line-by-line text and progress dots. Works with a CMS Collection List.
+Needs **SplitText** ticked in Site settings → GSAP integration.
+
+| Attribute | Where | Notes |
+|---|---|---|
+| `data-module="logo-testimonials"` | wrapper | required |
+| `data-logo-testimonials-autoplay="6"` | wrapper | seconds per testimonial, `0` or missing = click only |
+| `data-logo-testimonials-item` | each testimonial (Collection Item) | |
+| `data-logo-testimonials-logo` | logo inside `.logo-testimonials__logo-slot` | rolls up/down on change |
+| `data-logo-testimonials-split` | quote, name, role | fades in line by line |
+| `data-logo-testimonials-dots` | dots wrapper | holds one dot as the blueprint |
+| `data-logo-testimonials-dot` | the blueprint dot | cloned per testimonial |
+| `data-logo-testimonials-dot-fill` | inside the dot | autoplay progress |
+
+Status is written to `data-logo-testimonials-status` (`active`, `leaving`, `inactive`) on items and dots. The CSS that hides inactive items and widens the active dot lives in Site settings → Custom code → Head.
