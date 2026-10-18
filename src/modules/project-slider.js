@@ -1,125 +1,56 @@
 // Project slider (based on Osmo's Logo Card Testimonials).
 // Projects stack on top of each other; the logo rolls and the text fades in
-// element by element. Dots show progress and jump to a project on click.
+// element by element. Prev/next arrows move through the projects and wrap around.
 //
 // Webflow attributes:
 //   data-module="project-slider"          on the wrapper, required
-//   data-project-slider-autoplay="6"      seconds per project, 0 or missing = click only
 //   data-project-slider-item              each project (works on a CMS Collection Item)
 //   data-project-slider-logo              the logo, inside a slot with overflow hidden
 //   data-project-slider-text              text that fades in, one element after another
-//   data-project-slider-dots              dots wrapper, holding one dot as the blueprint
-//   data-project-slider-dot               the dot blueprint (cloned per project)
-//   data-project-slider-dot-fill          progress fill inside the dot
+//   data-project-slider-prev              previous arrow (can live inside each item)
+//   data-project-slider-next              next arrow (can live inside each item)
 //
-// Sets data-project-slider-status="active" | "leaving" | "inactive" on items and dots.
-import { onDestroy, onView } from "../lib/modules.js";
+// Sets data-project-slider-status="active" | "leaving" | "inactive" on items.
+import { onDestroy } from "../lib/modules.js";
 
 export default function projectSlider(root) {
   const items = Array.from(root.querySelectorAll("[data-project-slider-item]"));
   if (!items.length) return;
 
-  const dotsWrap = root.querySelector("[data-project-slider-dots]");
-  const dotTemplate = dotsWrap.querySelector("[data-project-slider-dot]");
-  const autoplaySeconds =
-    parseFloat(root.getAttribute("data-project-slider-autoplay")) || 0;
-
-  dotTemplate.remove();
-
-  const slides = items.map((item, index) => {
-    const dot = dotTemplate.cloneNode(true);
-    dot.setAttribute("aria-label", `Show project ${index + 1}`);
-    dot.addEventListener("click", () => goTo(index));
-    dotsWrap.appendChild(dot);
-
-    return {
-      item,
-      dot,
-      fill: dot.querySelector("[data-project-slider-dot-fill]"),
-      logo: item.querySelector("[data-project-slider-logo]"),
-      texts: Array.from(item.querySelectorAll("[data-project-slider-text]")),
-    };
-  });
+  const slides = items.map((item) => ({
+    item,
+    logo: item.querySelector("[data-project-slider-logo]"),
+    texts: Array.from(item.querySelectorAll("[data-project-slider-text]")),
+  }));
 
   let activeIndex = 0;
   let transition = null;
-  let timer = null;
-  let isInView = false;
-  let isHeld = false;
   let reduceMotion = false;
 
   function setStatus(slide, status) {
-    const isActive = status === "active";
     slide.item.setAttribute("data-project-slider-status", status);
-    slide.item.setAttribute("aria-hidden", String(!isActive));
-    slide.dot.setAttribute(
-      "data-project-slider-status",
-      isActive ? "active" : "inactive"
-    );
-    slide.dot.setAttribute("aria-current", String(isActive));
+    slide.item.setAttribute("aria-hidden", String(status !== "active"));
   }
 
-  function startTimer() {
-    if (timer) timer.kill();
-
-    const activeFill = slides[activeIndex].fill;
-
-    gsap.set(
-      slides.map((slide) => slide.fill),
-      {
-        scaleX: 0,
-      }
-    );
-
-    if (!autoplaySeconds) {
-      gsap.set(activeFill, {
-        scaleX: 1,
-      });
-      return;
-    }
-
-    timer = gsap.fromTo(
-      activeFill,
-      {
-        scaleX: 0,
-      },
-      {
-        scaleX: 1,
-        duration: autoplaySeconds,
-        ease: "none",
-        onComplete: () => goTo((activeIndex + 1) % slides.length),
-      }
-    );
-    updateTimer();
-  }
-
-  function updateTimer() {
-    if (!timer) return;
-    if (isInView && !isHeld) timer.resume();
-    else timer.pause();
-  }
-
-  function goTo(nextIndex) {
+  // direction: 1 = next (content moves up), -1 = previous (content moves down)
+  function goTo(nextIndex, direction) {
     if (nextIndex === activeIndex) return;
     if (transition) transition.progress(1);
 
     const outgoing = slides[activeIndex];
     const incoming = slides[nextIndex];
-    const outgoingTexts = outgoing.texts;
-    const incomingTexts = incoming.texts;
 
     setStatus(outgoing, "leaving");
     setStatus(incoming, "active");
     activeIndex = nextIndex;
-    startTimer();
 
     transition = gsap.timeline({
       onComplete: () => {
         setStatus(outgoing, "inactive");
         gsap.set(
           [
-            ...outgoingTexts,
-            ...incomingTexts,
+            ...outgoing.texts,
+            ...incoming.texts,
             outgoing.logo,
             incoming.logo,
             outgoing.item,
@@ -161,7 +92,7 @@ export default function projectSlider(root) {
 
     transition
       .to(
-        outgoingTexts,
+        outgoing.texts,
         {
           opacity: 0,
           duration: 0.4,
@@ -173,10 +104,10 @@ export default function projectSlider(root) {
         0
       )
       .fromTo(
-        incomingTexts,
+        incoming.texts,
         {
           opacity: 0,
-          y: "0.75em",
+          y: direction * 12,
         },
         {
           opacity: 1,
@@ -195,7 +126,7 @@ export default function projectSlider(root) {
         .to(
           outgoing.logo,
           {
-            yPercent: -110,
+            yPercent: -110 * direction,
             duration: 0.6,
             ease: "power4.inOut",
           },
@@ -204,7 +135,7 @@ export default function projectSlider(root) {
         .fromTo(
           incoming.logo,
           {
-            yPercent: 110,
+            yPercent: 110 * direction,
           },
           {
             yPercent: 0,
@@ -216,28 +147,47 @@ export default function projectSlider(root) {
     }
   }
 
-  function onHold() {
-    isHeld = true;
-    updateTimer();
+  function next() {
+    goTo((activeIndex + 1) % slides.length, 1);
   }
 
-  function onRelease(event) {
-    if (event.type === "focusout" && root.contains(event.relatedTarget)) return;
-    isHeld = false;
-    updateTimer();
+  function prev() {
+    goTo((activeIndex - 1 + slides.length) % slides.length, -1);
   }
 
-  root.addEventListener("pointerenter", onHold);
-  root.addEventListener("pointerleave", onRelease);
-  root.addEventListener("focusin", onHold);
-  root.addEventListener("focusout", onRelease);
+  // One listener for every arrow pair (each CMS item carries its own arrows)
+  function onClick(event) {
+    if (event.target.closest("[data-project-slider-next]")) next();
+    else if (event.target.closest("[data-project-slider-prev]")) prev();
+  }
 
-  onView(root, {
-    callback: ({ isIn }) => {
-      isInView = isIn;
-      updateTimer();
-    },
-  });
+  function onKeydown(event) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const arrow = event.target.closest(
+      "[data-project-slider-next], [data-project-slider-prev]"
+    );
+    if (!arrow) return;
+    event.preventDefault();
+    arrow.click();
+  }
+
+  // Arrows may be plain divs in Webflow: make them keyboard and screen reader friendly
+  root
+    .querySelectorAll("[data-project-slider-prev], [data-project-slider-next]")
+    .forEach((arrow) => {
+      const isNext = arrow.hasAttribute("data-project-slider-next");
+      if (arrow.tagName !== "BUTTON") {
+        arrow.setAttribute("role", "button");
+        arrow.setAttribute("tabindex", "0");
+      }
+      arrow.setAttribute(
+        "aria-label",
+        isNext ? "Next project" : "Previous project"
+      );
+    });
+
+  root.addEventListener("click", onClick);
+  root.addEventListener("keydown", onKeydown);
 
   const mm = gsap.matchMedia();
   mm.add("(prefers-reduced-motion: reduce)", () => {
@@ -250,15 +200,11 @@ export default function projectSlider(root) {
   slides.forEach((slide, index) =>
     setStatus(slide, index === activeIndex ? "active" : "inactive")
   );
-  startTimer();
 
   onDestroy(() => {
-    timer?.kill();
     transition?.kill();
     mm.revert();
-    root.removeEventListener("pointerenter", onHold);
-    root.removeEventListener("pointerleave", onRelease);
-    root.removeEventListener("focusin", onHold);
-    root.removeEventListener("focusout", onRelease);
+    root.removeEventListener("click", onClick);
+    root.removeEventListener("keydown", onKeydown);
   });
 }

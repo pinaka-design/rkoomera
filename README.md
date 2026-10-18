@@ -105,17 +105,15 @@ Status is written to `data-rive-status`: `loading`, `loaded` or `error`.
 
 ### project-slider
 
-Stacked project slides with a rolling logo, fading text and progress dots (based on Osmo's Logo Card Testimonials). Works with a CMS Collection List.
+Stacked project slides with a rolling logo, fading text and prev/next arrows (based on Osmo's Logo Card Testimonials). Works with a CMS Collection List. Navigation wraps around: next on the last project goes to the first.
 
 | Attribute | Where | Notes |
 |---|---|---|
 | `data-module="project-slider"` | wrapper | required |
-| `data-project-slider-autoplay="6"` | wrapper | seconds per project, `0` or missing = click only |
 | `data-project-slider-item` | each project (Collection Item) | |
-| `data-project-slider-logo` | logo inside the logo slot | rolls up/down on change |
+| `data-project-slider-logo` | logo inside the logo slot | rolls up on next, down on previous |
 | `data-project-slider-text` | text (title, description...) | fades in, one element after another |
-| `data-project-slider-dots` | dots wrapper | holds one dot as the blueprint |
-| `data-project-slider-dot` | the blueprint dot | cloned per project |
-| `data-project-slider-dot-fill` | inside the dot | autoplay progress |
+| `data-project-slider-prev` | previous arrow | can sit inside each item; divs get button roles and keyboard support |
+| `data-project-slider-next` | next arrow | same as above |
 
-Status is written to `data-project-slider-status` (`active`, `leaving`, `inactive`) on items and dots. The CSS that hides inactive items and widens the active dot lives in Site settings → Custom code → Head.
+Status is written to `data-project-slider-status` (`active`, `leaving`, `inactive`) on items. The CSS that hides inactive items lives in Site settings → Custom code → Head.
