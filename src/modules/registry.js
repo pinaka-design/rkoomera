@@ -8,8 +8,10 @@
 // Both are registered the same way.
 import rive from "./rive.js";
 import projectSlider from "./project-slider.js";
+import tabs from "./tabs.js";
 
 export const registry = {
   rive,
   "project-slider": projectSlider,
+  tabs,
 };

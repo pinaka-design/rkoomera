@@ -117,3 +117,20 @@ Stacked project slides with a rolling logo, fading text and prev/next arrows (ba
 | `data-project-slider-next` | next arrow | same as above |
 
 Status is written to `data-project-slider-status` (`active`, `leaving`, `inactive`) on items. The CSS that hides inactive items lives in Site settings → Custom code → Head.
+
+### tabs
+
+Tabs that open their details and swap a matching visual, with optional autoplay and a progress bar (based on Osmo's Tab System with Autoplay Option). Keeps Osmo's `data-tabs` attributes.
+
+| Attribute | Where | Notes |
+|---|---|---|
+| `data-module="tabs"` | wrapper | required |
+| `data-tabs="wrapper"` | wrapper | from Osmo's markup |
+| `data-tabs-autoplay="true"` | wrapper | optional, remove to switch only on click |
+| `data-tabs-autoplay-duration="5000"` | wrapper | milliseconds per tab, default 5000 |
+| `data-tabs="content-item"` | each tab | |
+| `data-tabs="item-details"` | inside a tab | opens and closes |
+| `data-tabs="item-progress"` | inside a tab | autoplay progress bar |
+| `data-tabs="visual-item"` | each visual | same order as the tabs |
+
+The script toggles the `active` class on the current tab and visual. The CSS that fades inactive tabs and adds hover states lives in Site settings → Custom code → Head.
