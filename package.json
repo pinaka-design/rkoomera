@@ -5,7 +5,8 @@
   "description": "Custom JavaScript for the rkoomera Webflow portfolio",
   "scripts": {
     "build": "esbuild src/main.js --bundle --format=iife --target=es2020 --minify --sourcemap --outfile=dist/main.js",
-    "dev": "esbuild src/main.js --bundle --format=iife --target=es2020 --sourcemap --outfile=dist/main.js --watch",
+    "dev": "node scripts/dev.mjs",
+    "watch": "esbuild src/main.js --bundle --format=iife --target=es2020 --sourcemap --outfile=dist/main.js --watch",
     "format": "prettier --write src"
   },
   "devDependencies": {

@@ -1,0 +1,42 @@
+<!-- Site settings → Custom code → Footer. Keep this file and Webflow in sync. -->
+<script src="https://cdn.jsdelivr.net/npm/@rive-app/canvas@2.45.0"></script>
+<script>
+  // Loads main.js from jsDelivr, or from `npm run dev` on localhost when
+  // dev mode is on. ?dev=1 turns it on (remembered in this browser), ?dev=0 off.
+  (function () {
+    var VERSION = "v1.1.0";
+    var CDN = "https://cdn.jsdelivr.net/gh/pinaka-design/rkoomera@" + VERSION + "/dist/main.js";
+    var LOCAL = "http://localhost:3333";
+    var flag = new URLSearchParams(location.search).get("dev");
+    var dev = flag === "1";
+    try {
+      if (flag === "1") localStorage.setItem("rk-dev", "1");
+      if (flag === "0") localStorage.removeItem("rk-dev");
+      dev = localStorage.getItem("rk-dev") === "1";
+    } catch (e) {}
+
+    function load(src, onload, onerror) {
+      var s = document.createElement("script");
+      s.src = src;
+      s.onload = onload;
+      s.onerror = onerror;
+      document.body.appendChild(s);
+    }
+
+    if (!dev) return load(CDN);
+    load(
+      LOCAL + "/main.js",
+      function () {
+        console.info("[rkoomera] dev mode: using " + LOCAL + "/main.js");
+        // Reload the page whenever the dev server rebuilds
+        new EventSource(LOCAL + "/esbuild").addEventListener("change", function () {
+          location.reload();
+        });
+      },
+      function () {
+        console.warn("[rkoomera] dev mode is on but localhost is down, using CDN");
+        load(CDN);
+      }
+    );
+  })();
+</script>
