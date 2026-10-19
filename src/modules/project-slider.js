@@ -13,6 +13,15 @@
 // Sets data-project-slider-status="active" | "leaving" | "inactive" on items.
 import { onDestroy } from "../lib/modules.js";
 
+// Motion settings in seconds (distance in px). Tweak the feel here.
+const MOTION = {
+  distance: 12, // how far text travels on the way out and in
+  textOut: { duration: 0.6, stagger: 0.15 },
+  textIn: { start: 0.75, duration: 1, stagger: 0.4 }, // start = gap after old text begins leaving
+  logoOut: { duration: 0.8 },
+  logoIn: { start: 0.2, duration: 0.9 },
+};
+
 export default function projectSlider(root) {
   const items = Array.from(root.querySelectorAll("[data-project-slider-item]"));
   if (!items.length) return;
@@ -96,11 +105,11 @@ export default function projectSlider(root) {
         {
           // Keep rising out of view as the new text rises in, last element first
           opacity: 0,
-          y: direction * -12,
-          duration: 0.4,
+          y: direction * -MOTION.distance,
+          duration: MOTION.textOut.duration,
           ease: "power3.in",
           stagger: {
-            amount: 0.1,
+            amount: MOTION.textOut.stagger,
             from: "end",
           },
         },
@@ -110,18 +119,18 @@ export default function projectSlider(root) {
         incoming.texts,
         {
           opacity: 0,
-          y: direction * 12,
+          y: direction * MOTION.distance,
         },
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
+          duration: MOTION.textIn.duration,
           ease: "power3.out",
           stagger: {
-            amount: 0.3,
+            amount: MOTION.textIn.stagger,
           },
         },
-        0.35
+        MOTION.textIn.start
       );
 
     if (outgoing.logo && incoming.logo) {
@@ -130,7 +139,7 @@ export default function projectSlider(root) {
           outgoing.logo,
           {
             yPercent: -110 * direction,
-            duration: 0.6,
+            duration: MOTION.logoOut.duration,
             ease: "power4.inOut",
           },
           0
@@ -142,10 +151,10 @@ export default function projectSlider(root) {
           },
           {
             yPercent: 0,
-            duration: 0.7,
+            duration: MOTION.logoIn.duration,
             ease: "power4.inOut",
           },
-          0.15
+          MOTION.logoIn.start
         );
     }
   }
