@@ -15,9 +15,9 @@ import { onDestroy } from "../lib/modules.js";
 
 // Motion settings in seconds (distance in px). Tweak the feel here.
 const MOTION = {
-  distance: 12, // how far text travels on the way out and in
-  textOut: { duration: 0.6, stagger: 0.4 },
-  textIn: { start: 0.75, duration: 1, stagger: 0.4 }, // start = gap after old text begins leaving
+  distance: 20, // how far text travels on the way out and in
+  textOut: { duration: 0.4, stagger: 0.1 },
+  textIn: { start: 0.4, duration: 1, stagger: 0.1 }, // start = gap after old text begins leaving
   logoOut: { duration: 0.8 },
   logoIn: { start: 0.2, duration: 0.9 },
 };
