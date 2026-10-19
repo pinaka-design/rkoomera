@@ -102,3 +102,35 @@ The Rive runtime must come before `main.js`. GSAP comes from Webflow, and `main.
 | `data-rive-fit` | no | `contain` (default), `cover`, `fill`... |
 
 Status is written to `data-rive-status`: `loading`, `loaded` or `error`.
+
+### project-slider
+
+Stacked project slides with a rolling logo, fading text and prev/next arrows (based on Osmo's Logo Card Testimonials). Works with a CMS Collection List. Navigation wraps around: next on the last project goes to the first.
+
+| Attribute | Where | Notes |
+|---|---|---|
+| `data-module="project-slider"` | wrapper | required |
+| `data-project-slider-item` | each project (Collection Item) | |
+| `data-project-slider-logo` | logo inside the logo slot | rolls up on next, down on previous |
+| `data-project-slider-text` | text (title, description...) | fades in, one element after another |
+| `data-project-slider-prev` | previous arrow | can sit inside each item; divs get button roles and keyboard support |
+| `data-project-slider-next` | next arrow | same as above |
+
+Status is written to `data-project-slider-status` (`active`, `leaving`, `inactive`) on items. The CSS that hides inactive items lives in Site settings → Custom code → Head.
+
+### tabs
+
+Tabs that open their details and swap a matching visual, with optional autoplay and a progress bar (based on Osmo's Tab System with Autoplay Option). Keeps Osmo's `data-tabs` attributes.
+
+| Attribute | Where | Notes |
+|---|---|---|
+| `data-module="tabs"` | wrapper | required |
+| `data-tabs="wrapper"` | wrapper | from Osmo's markup |
+| `data-tabs-autoplay="true"` | wrapper | optional, remove to switch only on click |
+| `data-tabs-autoplay-duration="5000"` | wrapper | milliseconds per tab, default 5000 |
+| `data-tabs="content-item"` | each tab | |
+| `data-tabs="item-details"` | inside a tab | opens and closes |
+| `data-tabs="item-progress"` | inside a tab | autoplay progress bar |
+| `data-tabs="visual-item"` | each visual | same order as the tabs |
+
+The script toggles the `active` class on the current tab and visual. The CSS that fades inactive tabs and adds hover states lives in Site settings → Custom code → Head.

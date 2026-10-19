@@ -10,7 +10,9 @@ export function setupGsap() {
     );
     return;
   }
-  if (typeof ScrollTrigger !== "undefined") gsap.registerPlugin(ScrollTrigger);
+  // Register whichever plugins are ticked in Webflow
+  const plugins = [window.ScrollTrigger, window.SplitText].filter(Boolean);
+  if (plugins.length) gsap.registerPlugin(...plugins);
 
   // Site-wide defaults. Uncomment to apply to every tween.
   // gsap.defaults({ ease: "power3.out", duration: 0.8 });
