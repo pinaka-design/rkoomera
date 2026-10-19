@@ -94,11 +94,14 @@ export default function projectSlider(root) {
       .to(
         outgoing.texts,
         {
+          // The incoming rise played in reverse: sink back and fade, last element first
           opacity: 0,
+          y: direction * 12,
           duration: 0.4,
-          ease: "power2.out",
+          ease: "power3.in",
           stagger: {
             amount: 0.1,
+            from: "end",
           },
         },
         0
