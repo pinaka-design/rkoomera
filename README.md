@@ -64,30 +64,32 @@ An unknown name logs a warning, and a component that throws an error logs it wit
 
 ```bash
 npm install        # first time only
-npm run dev        # rebuilds dist/main.js on every save while you work
+npm run dev        # serves a live bundle at http://localhost:3333/main.js
 npm run build      # minified build before committing
 ```
 
-Commit `src/` and `dist/` together, push, then update the hash in Site settings → Custom code → Footer:
+Commit `src/` and `dist/` together, push, tag a release, then update `VERSION` in the footer loader (`webflow/footer.html`, copied into Site settings → Custom code → Footer).
 
-```html
-<script src="https://cdn.jsdelivr.net/gh/pinaka-design/rkoomera@<commit-hash>/dist/main.js"></script>
-```
+## Dev mode
+
+The footer loader picks where `main.js` comes from, so you can work on the live Webflow site without publishing:
+
+1. `npm run dev`
+2. Open the Webflow site (published or staging) with `?dev=1` on the URL. The browser remembers it.
+3. Every save rebuilds the bundle and reloads the page.
+4. `?dev=0` switches back to jsDelivr.
+
+If dev mode is on but the server isn't running, the loader falls back to jsDelivr and logs a warning. `npm run dev` builds in memory and never touches `dist/`; `npm run watch` is the old rebuild-to-disk mode. Chrome and Firefox allow an `https` page to load from `http://localhost`; Safari may block it.
 
 ## Webflow setup
 
 | Where | What |
 |---|---|
 | Site settings → GSAP integration | GSAP on, ScrollTrigger ticked (add other plugins here when needed) |
-| Site settings → Custom code → Footer | the two scripts below |
+| Site settings → Custom code → Footer | contents of `webflow/footer.html` |
 | Page settings → Custom code | leave empty, so nothing loads twice |
 
-```html
-<script src="https://cdn.jsdelivr.net/npm/@rive-app/canvas@2.45.0"></script>
-<script src="https://cdn.jsdelivr.net/gh/pinaka-design/rkoomera@<commit-hash>/dist/main.js"></script>
-```
-
-The Rive runtime must come before `main.js`. GSAP comes from Webflow, and `main.js` waits for the page to finish loading before it starts.
+The footer loads the Rive runtime, then the loader, which adds `main.js` from jsDelivr (or localhost in dev mode). The Rive runtime must come before `main.js`. GSAP comes from Webflow, and `main.js` waits for the page to finish loading before it starts.
 
 ## Components
 
