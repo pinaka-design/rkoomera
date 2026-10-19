@@ -25,16 +25,15 @@ export default function tabs(wrapper) {
     parseInt(wrapper.dataset.tabsAutoplayDuration) || 5000;
 
   let activeContent = null; // keep track of active item/link
-  let activeVisual = null;
-  let isAnimating = false;
   let progressBarTween = null; // to stop/start the progress bar
   let timeline = null;
 
+  const detailsOf = (item) => item.querySelector('[data-tabs="item-details"]');
+  const barOf = (item) => item.querySelector('[data-tabs="item-progress"]');
+
   function startProgressBar(index) {
     if (progressBarTween) progressBarTween.kill();
-    const bar = contentItems[index].querySelector(
-      '[data-tabs="item-progress"]'
-    );
+    const bar = barOf(contentItems[index]);
     if (!bar) return;
 
     // Anything that should happen while a tab is active can go here
@@ -44,74 +43,72 @@ export default function tabs(wrapper) {
       duration: autoplayDuration / 1000,
       ease: "power1.inOut",
       onComplete: () => {
-        if (!isAnimating) {
-          const nextIndex = (index + 1) % contentItems.length;
-          switchTab(nextIndex); // once the bar is full, activate the next tab
-        }
+        const nextIndex = (index + 1) % contentItems.length;
+        switchTab(nextIndex); // once the bar is full, activate the next tab
       },
     });
   }
 
   function switchTab(index) {
-    if (isAnimating || contentItems[index] === activeContent) return;
-
-    isAnimating = true;
-    if (progressBarTween) progressBarTween.kill(); // stop any running progress bar
-
-    const outgoingContent = activeContent;
-    const outgoingVisual = activeVisual;
-    const outgoingBar = outgoingContent?.querySelector(
-      '[data-tabs="item-progress"]'
-    );
-
     const incomingContent = contentItems[index];
-    const incomingVisual = visualItems[index];
-    const incomingBar = incomingContent.querySelector(
-      '[data-tabs="item-progress"]'
-    );
+    if (incomingContent === activeContent) return;
 
-    outgoingContent?.classList.remove("active");
-    outgoingVisual?.classList.remove("active");
-    incomingContent.classList.add("active");
-    incomingVisual?.classList.add("active");
+    // A new click interrupts any running switch and animates on from
+    // wherever everything is right now, so fast clicking is never ignored
+    if (progressBarTween) progressBarTween.kill();
+    if (timeline) timeline.kill();
+
+    const isFirstRun = !activeContent;
+    const incomingVisual = visualItems[index];
+    activeContent = incomingContent;
+
+    contentItems.forEach((item) =>
+      item.classList.toggle("active", item === incomingContent)
+    );
+    visualItems.forEach((visual) =>
+      visual.classList.toggle("active", visual === incomingVisual)
+    );
 
     timeline = gsap.timeline({
       defaults: { duration: 0.65, ease: "power3" },
       onComplete: () => {
-        activeContent = incomingContent;
-        activeVisual = incomingVisual;
-        isAnimating = false;
         if (autoplay) startProgressBar(index); // start the autoplay bar
       },
     });
 
-    // No outgoing tab on the very first run (page load)
-    if (outgoingContent) {
-      timeline
-        .set(outgoingBar, { transformOrigin: "right center" })
-        .to(outgoingBar, { scaleX: 0, duration: 0.3 }, 0)
-        .to(outgoingVisual, { autoAlpha: 0, xPercent: 3 }, 0)
-        .to(
-          outgoingContent.querySelector('[data-tabs="item-details"]'),
-          { height: 0 },
-          0
-        );
+    // Close every other tab (no outgoing tab on the very first run)
+    if (!isFirstRun) {
+      contentItems.forEach((item, i) => {
+        if (i === index) return;
+        const bar = barOf(item);
+        if (bar) {
+          timeline
+            .set(bar, { transformOrigin: "right center" }, 0)
+            .to(bar, { scaleX: 0, duration: 0.3 }, 0);
+        }
+        timeline.to(detailsOf(item), { height: 0 }, 0);
+        if (visualItems[i]) {
+          timeline.to(visualItems[i], { autoAlpha: 0, xPercent: 3 }, 0);
+        }
+      });
+    }
+
+    // Start the incoming visual off to the side unless it is already partly in view
+    if (incomingVisual) {
+      const opacity = parseFloat(incomingVisual.style.opacity);
+      if (isFirstRun || !(opacity > 0)) {
+        gsap.set(incomingVisual, { autoAlpha: 0, xPercent: 3 });
+      }
+      timeline.to(incomingVisual, { autoAlpha: 1, xPercent: 0 }, 0.3);
     }
 
     timeline
-      .fromTo(
-        incomingVisual,
-        { autoAlpha: 0, xPercent: 3 },
-        { autoAlpha: 1, xPercent: 0 },
-        0.3
-      )
-      .fromTo(
-        incomingContent.querySelector('[data-tabs="item-details"]'),
-        { height: 0 },
-        { height: "auto" },
+      .to(detailsOf(incomingContent), { height: "auto" }, 0)
+      .set(
+        barOf(incomingContent),
+        { scaleX: 0, transformOrigin: "left center" },
         0
-      )
-      .set(incomingBar, { scaleX: 0, transformOrigin: "left center" }, 0);
+      );
   }
 
   // On page load, set the first tab active
