@@ -103,14 +103,13 @@ export default function projectSlider(root) {
       .to(
         outgoing.texts,
         {
-          // Keep rising out of view as the new text rises in, last element first
+          // Keep rising out of view as the new text rises in, in page order (left to right)
           opacity: 0,
           y: direction * -MOTION.distance,
           duration: MOTION.textOut.duration,
           ease: "power3.in",
           stagger: {
             amount: MOTION.textOut.stagger,
-            from: "end",
           },
         },
         0
