@@ -85,7 +85,7 @@ If dev mode is on but the server isn't running, the loader falls back to jsDeliv
 
 | Where | What |
 |---|---|
-| Site settings → GSAP integration | GSAP on, ScrollTrigger ticked (add other plugins here when needed) |
+| Site settings → GSAP integration | GSAP on, ScrollTrigger and Flip ticked (add other plugins here when needed) |
 | Site settings → Custom code → Footer | contents of `webflow/footer.html` |
 | Page settings → Custom code | leave empty, so nothing loads twice |
 
@@ -136,3 +136,44 @@ Tabs that open their details and swap a matching visual, with optional autoplay 
 | `data-tabs="visual-item"` | each visual | same order as the tabs |
 
 The script toggles the `active` class on the current tab and visual. The CSS that fades inactive tabs and adds hover states lives in Site settings → Custom code → Head.
+
+### lightbox
+
+Click an image and it flies from the page into a full-screen view with a counter and prev/next/close (based on Osmo's Lightbox Setup). One lightbox serves the whole page. Each `data-gallery` section is its own set, so prev/next stays inside the section you opened. Needs Flip ticked in the GSAP integration.
+
+Unlike Osmo's version, you don't add the images a second time inside the lightbox: the big copies are built from the gallery when it opens.
+
+| Attribute | Where | Notes |
+|---|---|---|
+| `data-module="lightbox"` | the lightbox wrapper | required, once per page (extra copies are ignored) |
+| `data-lightbox="wrapper"` | the same fixed wrapper | from Osmo's markup |
+| `data-lightbox="item"` | one item inside the lightbox list | used as the template for the big images; any others are replaced |
+| `data-lightbox="nav"` | each nav column | fades in |
+| `data-lightbox="counter-current"` / `"counter-total"` | counter numbers | |
+| `data-lightbox="prev"` / `"next"` / `"close"` | nav buttons | arrow keys and Escape work too |
+| `data-gallery` | a section (e.g. Design) | optional: groups grids and rich text inside it into one gallery; without it, each Collection List is its own gallery |
+| `data-lightbox="trigger"` | a button around each grid image | on a Collection List bound to a multi-image field |
+| `data-lightbox="trigger-parent"` | each grid item (Collection Item) | fades out while the lightbox is open |
+
+In Webflow the lightbox is the **Lightbox** component: drop one instance anywhere on a CMS template. To add a gallery, copy an existing gallery Collection List, paste it where you want it, then change its source (Collection List settings → Source) and the image binding to the new multi-image field. A gallery can't be a component itself: Webflow doesn't let a component's Collection List read a multi-image field from the page's CMS item.
+
+Images inside rich text open the lightbox with no attributes. Inside a `data-gallery` they join that gallery; otherwise each rich text field is a gallery of its own. Linked images are skipped.
+
+No custom CSS is needed: the script shows the wrapper and the active item itself. Avoid overflow hidden on triggers, trigger parents and lightbox items, or the flip animation clips.
+
+#### Videos in the lightbox
+
+Videos open in the same lightbox as images, in Osmo's Custom Bunny HLS player, so a group can mix both: prev/next, the counter and the flip work across them. A video starts when it becomes the active item, pauses when you step away, and is unloaded when the lightbox closes. When it ends it shows the play button again instead of closing.
+
+- **In rich text:** add the video's thumbnail as an image, then link the image to the video url. Use Bunny Stream's **HLS Playlist URL** (`https://vz-….b-cdn.net/<video-id>/playlist.m3u8`); `.mp4`, `.webm` and `.mov` links work too. The thumbnail joins the image grid, gets a play badge, and plays a silent looping preview of the video while it's on screen (it loads only when it first comes into view, pauses off screen and while the lightbox is open, and is skipped for visitors with reduced motion or data saver on). Images linked to anything else stay normal links. Previews use the smallest stream rendition that fills the thumbnail, so enabling lower resolutions (e.g. 360p, 480p) in Bunny Stream makes them lighter.
+- **Anywhere else:** Osmo's open button, `data-bunny-lightbox-control="open"` with `data-bunny-lightbox-src="<HLS url>"`, and optionally an `<img data-bunny-lightbox-placeholder>` inside for the poster (it can be hidden). Any trigger with `data-video="<url>"` works as well.
+
+The player markup comes from the **Video Player** component, which sits inside the **Lightbox** component, so one Lightbox instance per page brings both. The script uses it as a template and removes Osmo's own wrapper; don't add Osmo's JavaScript or the hls.js script tag, the script loads hls.js itself the first time a stream opens. Osmo's state CSS is included in the script too. Bunny's allowed domains (if set) must include the site's domains, including `rkoomera-portfolio.webflow.io`.
+
+### richtext-grid
+
+Lays out two or more images in a row of a rich text field (only empty lines between them) as a 2-column grid of 4:3 thumbnails. The grid brings its own styles, so it doesn't need any Webflow classes and a Style Manager clean-up can't break it. Columns, gaps, crop ratio, crop position, corner radius (your Radius/large variable), outline and spacing are set at the top of `src/modules/richtext-grid.js`. A single image between paragraphs stays as it is. Each group, and each single image, is its own lightbox gallery: prev/next stays inside the group you opened, and a single image opens without prev/next.
+
+| Attribute | Where | Notes |
+|---|---|---|
+| `data-module="richtext-grid"` | the Rich Text element | turns it on for that field only |
