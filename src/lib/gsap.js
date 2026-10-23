@@ -11,7 +11,9 @@ export function setupGsap() {
     return;
   }
   // Register whichever plugins are ticked in Webflow
-  const plugins = [window.ScrollTrigger, window.SplitText].filter(Boolean);
+  const plugins = [window.ScrollTrigger, window.SplitText, window.Flip].filter(
+    Boolean
+  );
   if (plugins.length) gsap.registerPlugin(...plugins);
 
   // Site-wide defaults. Uncomment to apply to every tween.
