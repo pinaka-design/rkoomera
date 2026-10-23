@@ -1,11 +1,12 @@
 // Project slider (based on Osmo's Logo Card Testimonials).
-// Projects stack on top of each other; the logo rolls and the text fades in
-// element by element. Prev/next arrows move through the projects and wrap around.
+// Projects stack on top of each other; the new hero image slides in over the
+// old one while settling from a slight zoom, and the text fades in element by
+// element. Prev/next arrows move through the projects and wrap around.
 //
 // Webflow attributes:
 //   data-module="project-slider"          on the wrapper, required
 //   data-project-slider-item              each project (works on a CMS Collection Item)
-//   data-project-slider-logo              the logo, inside a slot with overflow hidden
+//   data-project-slider-hero              the project image, inside a slot with overflow hidden
 //   data-project-slider-text              text that fades in, one element after another
 //   data-project-slider-prev              previous arrow (can live inside each item)
 //   data-project-slider-next              next arrow (can live inside each item)
@@ -18,8 +19,9 @@ const MOTION = {
   distance: 20, // how far text travels on the way out and in
   textOut: { duration: 0.4, stagger: 0.1 },
   textIn: { start: 0.4, duration: 1, stagger: 0.1 }, // start = gap after old text begins leaving
-  logoOut: { duration: 0.8 },
-  logoIn: { start: 0.2, duration: 0.9 },
+  // The old hero stays put; the new one slides over it and zooms out to 1
+  // ease: slow start, fast middle, slow landing (expo is the most pronounced)
+  heroIn: { start: 0, duration: 1.2, scale: 1.15, ease: "expo.inOut" },
 };
 
 export default function projectSlider(root) {
@@ -28,7 +30,10 @@ export default function projectSlider(root) {
 
   const slides = items.map((item) => ({
     item,
-    logo: item.querySelector("[data-project-slider-logo]"),
+    // data-project-slider-logo is the old name, still read until Webflow is updated
+    hero: item.querySelector(
+      "[data-project-slider-hero], [data-project-slider-logo]"
+    ),
     texts: Array.from(item.querySelectorAll("[data-project-slider-text]")),
   }));
 
@@ -53,6 +58,11 @@ export default function projectSlider(root) {
     setStatus(incoming, "active");
     activeIndex = nextIndex;
 
+    // Items share one grid cell, so DOM order decides which paints on top.
+    // Lift the incoming item so its hero covers the old one in both directions.
+    gsap.set(outgoing.item, { zIndex: 1 });
+    gsap.set(incoming.item, { zIndex: 2 });
+
     transition = gsap.timeline({
       onComplete: () => {
         setStatus(outgoing, "inactive");
@@ -60,13 +70,13 @@ export default function projectSlider(root) {
           [
             ...outgoing.texts,
             ...incoming.texts,
-            outgoing.logo,
-            incoming.logo,
+            outgoing.hero,
+            incoming.hero,
             outgoing.item,
             incoming.item,
           ].filter(Boolean),
           {
-            clearProps: "transform,opacity",
+            clearProps: "transform,opacity,zIndex",
           }
         );
         transition = null;
@@ -132,29 +142,21 @@ export default function projectSlider(root) {
         MOTION.textIn.start
       );
 
-    if (outgoing.logo && incoming.logo) {
-      transition
-        .to(
-          outgoing.logo,
-          {
-            yPercent: -110 * direction,
-            duration: MOTION.logoOut.duration,
-            ease: "power4.inOut",
-          },
-          0
-        )
-        .fromTo(
-          incoming.logo,
-          {
-            yPercent: 110 * direction,
-          },
-          {
-            yPercent: 0,
-            duration: MOTION.logoIn.duration,
-            ease: "power4.inOut",
-          },
-          MOTION.logoIn.start
-        );
+    if (incoming.hero) {
+      transition.fromTo(
+        incoming.hero,
+        {
+          yPercent: 110 * direction,
+          scale: MOTION.heroIn.scale,
+        },
+        {
+          yPercent: 0,
+          scale: 1,
+          duration: MOTION.heroIn.duration,
+          ease: MOTION.heroIn.ease,
+        },
+        MOTION.heroIn.start
+      );
     }
   }
 
