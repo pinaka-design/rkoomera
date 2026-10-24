@@ -177,7 +177,7 @@ The player markup comes from the **Video Player** component, which sits inside t
 
 ### richtext-grid
 
-Lays out two or more images in a row of a rich text field (only empty lines between them) as a 2-column grid of 4:3 thumbnails. The grid brings its own styles, so it doesn't need any Webflow classes and a Style Manager clean-up can't break it. Columns, gaps, crop ratio, crop position, corner radius (your Radius/large variable), outline and spacing are set at the top of `src/modules/richtext-grid.js`. A single image between paragraphs stays as it is. Each group, and each single image, is its own lightbox gallery: prev/next stays inside the group you opened, and a single image opens without prev/next.
+Lays out two or more images in a row of a rich text field (only empty lines between them) as a 2-column grid of 4:3 thumbnails, one column on phones (767px and below). The grid brings its own styles, so it doesn't need any Webflow classes and a Style Manager clean-up can't break it. Columns, gaps, crop ratio, crop position, corner radius (your Radius/large variable), outline and spacing are set at the top of `src/modules/richtext-grid.js`. A single image between paragraphs stays as it is. Each group, and each single image, is its own lightbox gallery: prev/next stays inside the group you opened, and a single image opens without prev/next.
 
 | Attribute | Where | Notes |
 |---|---|---|

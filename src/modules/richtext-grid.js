@@ -1,6 +1,6 @@
 // Rich text image grid.
 // Lays out two or more images in a row of a rich text field (nothing but
-// empty lines between them) as a 2-column grid. A single image between
+// empty lines between them) as a 2-column grid (one column on phones). A single image between
 // paragraphs uses the full width at its own shape (no crop). Text is capped at GRID.textWidth and centred,
 // while images and grids use the field's full width.
 //
@@ -13,7 +13,7 @@
 // The grid brings its own styles (no Webflow classes needed), so a style
 // clean-up in Webflow can't break it. Tweak the look here.
 const GRID = {
-  columns: 2,
+  columns: { desktop: 2, mobile: 1 }, // mobile = phones, 767px and below
   gap: { desktop: "1.25em", tablet: "1em", mobile: "0.75em" },
   ratio: "4 / 3", // thumbnail crop; the lightbox still shows the whole image
   position: "50% 0%", // which part of the image the crop keeps (top centre)
@@ -36,7 +36,7 @@ const CSS = `
 }
 .w-richtext .rt-grid {
   display: grid;
-  grid-template-columns: repeat(${GRID.columns}, minmax(0, 1fr));
+  grid-template-columns: repeat(${GRID.columns.desktop}, minmax(0, 1fr));
   gap: ${GRID.gap.desktop};
   margin: ${GRID.spacing} 0;
 }
@@ -92,7 +92,10 @@ const CSS = `
   text-align: center;
 }
 @media screen and (max-width: 767px) {
-  .w-richtext .rt-grid { gap: ${GRID.gap.tablet}; }
+  .w-richtext .rt-grid {
+    grid-template-columns: repeat(${GRID.columns.mobile}, minmax(0, 1fr));
+    gap: ${GRID.gap.tablet};
+  }
 }
 @media screen and (max-width: 479px) {
   .w-richtext .rt-grid { gap: ${GRID.gap.mobile}; }
