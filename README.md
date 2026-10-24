@@ -88,6 +88,9 @@ If dev mode is on but the server isn't running, the loader falls back to jsDeliv
 | Site settings → GSAP integration | GSAP on, ScrollTrigger and Flip ticked (add other plugins here when needed) |
 | Site settings → Custom code → Footer | contents of `webflow/footer.html` |
 | Page settings → Custom code | leave empty, so nothing loads twice |
+| **Global Styles** component | an Embed nested inside the Navigation component, so it's on every page and shows in the Designer |
+
+CSS goes in one of two places. Styles for markup you build in the Designer (slider states, tabs, anything shown or hidden by a status attribute) go in the Global Styles component, so the Designer previews them too. Styles for markup the script creates at runtime (rich text grid, video previews, play badge, player states) stay in the script.
 
 The footer loads the Rive runtime, then the loader, which adds `main.js` from jsDelivr (or localhost in dev mode). The Rive runtime must come before `main.js`. GSAP comes from Webflow, and `main.js` waits for the page to finish loading before it starts.
 
@@ -118,7 +121,9 @@ Stacked project slides with a hero image that slides in over the previous one (w
 | `data-project-slider-prev` | previous arrow | can sit inside each item; divs get button roles and keyboard support |
 | `data-project-slider-next` | next arrow | same as above |
 
-Status is written to `data-project-slider-status` (`active`, `leaving`, `inactive`) on items. The CSS that hides inactive items lives in Site settings → Custom code → Head.
+Status is written to `data-project-slider-status` (`active`, `leaving`, `inactive`) on items. The CSS that hides inactive items lives in the **Global Styles** component.
+
+On a project's own page the slider leaves that project out and starts with the one after it, so the same slider works as "what to view next" at the bottom of a case study. It compares each item's first link with the page URL. If only one project is left the arrows hide, and if none are left the slider hides.
 
 ### tabs
 
@@ -135,7 +140,7 @@ Tabs that open their details and swap a matching visual, with optional autoplay 
 | `data-tabs="item-progress"` | inside a tab | autoplay progress bar |
 | `data-tabs="visual-item"` | each visual | same order as the tabs |
 
-The script toggles the `active` class on the current tab and visual. The CSS that fades inactive tabs and adds hover states lives in Site settings → Custom code → Head.
+The script toggles the `active` class on the current tab and visual. The CSS that fades inactive tabs and adds hover states lives in the **Global Styles** component.
 
 ### lightbox
 
