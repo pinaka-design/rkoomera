@@ -12,6 +12,11 @@
 //   data-project-slider-next              next arrow (can live inside each item)
 //
 // Sets data-project-slider-status="active" | "leaving" | "inactive" on items.
+// The CSS that hides inactive items lives in the Global Styles component.
+//
+// On a project's own page the slider leaves that project out and starts with
+// the one after it, so the same component works as "what to view next". Each
+// item's first link (to its project page) is how it knows which one is current.
 import { onDestroy } from "../lib/modules.js";
 
 // Motion settings in seconds (distance in px). Tweak the feel here.
@@ -24,9 +29,43 @@ const MOTION = {
   heroIn: { start: 0, duration: 1.2, scale: 1.15, ease: "expo.inOut" },
 };
 
+const normalizePath = (path) => path.replace(/\/+$/, "") || "/";
+
+// Drop the item for the page we're on and rotate so the next one comes first
+function nextUp(items) {
+  const here = normalizePath(location.pathname);
+  const index = items.findIndex((item) => {
+    const link = item.querySelector("a[href]");
+    if (!link) return false;
+    return normalizePath(new URL(link.href, location.href).pathname) === here;
+  });
+  if (index === -1) return items;
+  items[index].remove();
+  const ordered = [...items.slice(index + 1), ...items.slice(0, index)];
+  ordered.forEach((item) => item.parentElement.appendChild(item));
+  return ordered;
+}
+
 export default function projectSlider(root) {
-  const items = Array.from(root.querySelectorAll("[data-project-slider-item]"));
-  if (!items.length) return;
+  const items = nextUp(
+    Array.from(root.querySelectorAll("[data-project-slider-item]"))
+  );
+  if (!items.length) {
+    // The only project is the one being viewed: nothing to show
+    root.style.display = "none";
+    return;
+  }
+
+  // Nothing to step through with a single project
+  if (items.length < 2) {
+    root
+      .querySelectorAll(
+        "[data-project-slider-prev], [data-project-slider-next]"
+      )
+      .forEach((arrow) => {
+        arrow.style.visibility = "hidden";
+      });
+  }
 
   const slides = items.map((item) => ({
     item,
