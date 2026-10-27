@@ -11,6 +11,7 @@ import projectSlider from "./project-slider.js";
 import tabs from "./tabs.js";
 import lightbox from "./lightbox.js";
 import richtextGrid from "./richtext-grid.js";
+import cursorFollow from "./cursor-follow.js";
 
 export const registry = {
   rive,
@@ -18,4 +19,5 @@ export const registry = {
   tabs,
   lightbox,
   "richtext-grid": richtextGrid,
+  "cursor-follow": cursorFollow,
 };

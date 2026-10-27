@@ -183,3 +183,14 @@ Lays out two or more images in a row of a rich text field (only empty lines betw
 | Attribute | Where | Notes |
 |---|---|---|
 | `data-module="richtext-grid"` | the Rich Text element | turns it on for that field only |
+
+### cursor-follow
+
+A button that follows the mouse around an area, like the "View project" button on the project slider images. It rests in its place (top-right of the image); while the pointer moves over the area it glides after it, staying inside the area, and when the pointer leaves it glides back. Desktop only: on touch screens, screens under 992px and with reduced motion it stays put. The follow speed is at the top of `src/modules/cursor-follow.js`.
+
+| Attribute | Where | Notes |
+|---|---|---|
+| `data-module="cursor-follow"` | the area (e.g. the image wrapper) | required; give it position relative |
+| `data-cursor-follow="target"` | the element that follows, inside the area | e.g. an absolutely positioned holder around the Button component |
+
+On the project slider the holder has pointer-events none, so clicking the button opens the project through the image link underneath.
