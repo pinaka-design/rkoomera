@@ -174,7 +174,7 @@ Videos open in the same lightbox as images, in Osmo's Custom Bunny HLS player, s
 - **Anywhere else:** Osmo's open button, `data-bunny-lightbox-control="open"` with `data-bunny-lightbox-src="<HLS url>"`, and optionally an `<img data-bunny-lightbox-placeholder>` inside for the poster (it can be hidden). Any trigger with `data-video="<url>"` works as well.
 - **A link to a video:** a link with `data-lightbox="trigger"` whose url is a video opens it in the lightbox; any other url stays an ordinary link. The project hero button (`projects-hero_btn`) uses this: its link condition points to the Live site field, or else to Video Link, so projects with a video play it and the rest open their site.
 
-The player markup comes from the **Video Player** component, which sits inside the **Lightbox** component, so one Lightbox instance per page brings both. The script uses it as a template and removes Osmo's own wrapper; don't add Osmo's JavaScript or the hls.js script tag, the script loads hls.js itself the first time a stream opens. Osmo's state CSS is included in the script too. Bunny's allowed domains (if set) must include the site's domains, including `rkoomera-portfolio.webflow.io`.
+The player markup comes from the **Video Player** component, which sits inside the **Lightbox** component, so one Lightbox instance per page brings both. The script uses it as a template and removes Osmo's own wrapper; don't add Osmo's JavaScript or the hls.js script tag, the script loads hls.js itself the first time a stream opens. Osmo's state CSS is included in the script too. Bunny's allowed domains (if set) must include the site's domains, including `pinaka-design.webflow.io`.
 
 ### richtext-grid
 
