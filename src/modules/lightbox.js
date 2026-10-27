@@ -229,10 +229,14 @@ export default function lightbox(root) {
         const img =
           trigger.querySelector("[data-bunny-lightbox-placeholder]") ||
           trigger.querySelector("img");
+        // A trigger that links to a video opens it (e.g. a button bound to
+        // a CMS link field); one that links anywhere else stays a link
+        const href = trigger.tagName === "A" ? trigger.getAttribute("href") : "";
         const video =
           trigger.getAttribute("data-video") ||
           trigger.getAttribute("data-bunny-lightbox-src") ||
-          null;
+          (isVideoUrl(href) ? trigger.href : null);
+        if (href && !href.startsWith("#") && !video) return null;
         // Images need a picture; videos can open without a poster
         if (!img && !video) return null;
         const parent =
